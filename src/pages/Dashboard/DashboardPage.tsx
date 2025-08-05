@@ -1,13 +1,25 @@
 import { useEffect, useState } from "react";
 import { useProcessStatus } from "../../api/queries.ts";
+import { useStartProcessMutation } from "../../api/mutations.ts";
+import { useQueryClient } from "@tanstack/react-query";
 
 const DashboardPage = () => {
   const [isRunning, setIsRunning] = useState(true);
+  const [remainingDuration, setRemainingDuration] = useState<number | undefined>();
+
+  const queryClient = useQueryClient();
   const processStatus = useProcessStatus();
+  const startProcess = useStartProcessMutation(queryClient);
 
   useEffect(() => {
-    console.log("Process Status:", processStatus.data);
-  }, [processStatus.data]);
+    if (processStatus.isSuccess) {
+      if (processStatus.data) {
+        setRemainingDuration(processStatus.data.interval.remainingDuration);
+      } else {
+        startProcess.mutate({ component: "BX50", quantity: 4 });
+      }
+    }
+  }, [processStatus, startProcess]);
 
   const handlePause = () => {
     setIsRunning(false);
@@ -24,7 +36,7 @@ const DashboardPage = () => {
         <dl>
           <div>
             <dt>Status</dt>
-            <dd>{processStatus.data ?? "Inactive"}</dd>
+            <dd>{remainingDuration ?? "Inactive"}</dd>
           </div>
         </dl>
       </section>
