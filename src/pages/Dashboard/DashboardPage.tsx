@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useProcessStatus } from "../../api/queries.ts";
-import { useStartProcessMutation } from "../../api/mutations.ts";
+import { usePauseProcessMutation, useResumeProcessMutation, useStartProcessMutation } from "../../api/mutations.ts";
 import { useQueryClient } from "@tanstack/react-query";
 
 const DashboardPage = () => {
@@ -10,9 +10,11 @@ const DashboardPage = () => {
   const queryClient = useQueryClient();
   const processStatus = useProcessStatus();
   const startProcess = useStartProcessMutation(queryClient);
+  const pauseProcess = usePauseProcessMutation(queryClient);
+  const resumeProcess = useResumeProcessMutation(queryClient);
 
   useEffect(() => {
-    if (processStatus.isSuccess) {
+    if (processStatus.isSuccess && !processStatus.isFetching) {
       if (processStatus.data) {
         setRemainingDuration(processStatus.data.interval.remainingDuration);
       } else {
@@ -22,10 +24,12 @@ const DashboardPage = () => {
   }, [processStatus, startProcess]);
 
   const handlePause = () => {
+    pauseProcess.mutate();
     setIsRunning(false);
   };
 
   const handleResume = () => {
+    resumeProcess.mutate();
     setIsRunning(true);
   };
 

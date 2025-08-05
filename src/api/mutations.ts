@@ -12,3 +12,23 @@ export const useStartProcessMutation = (queryClient: QueryClient) =>
       queryClient.invalidateQueries({ queryKey: ["process"] });
     },
   });
+
+export const usePauseProcessMutation = (queryClient: QueryClient) =>
+  useMutation({
+    mutationFn: async () => {
+      return await api.patch("/process/pause");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["process"] });
+    },
+  });
+
+export const useResumeProcessMutation = (queryClient: QueryClient) =>
+  useMutation({
+    mutationFn: async () => {
+      return await api.patch("/process/resume");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["process"] });
+    },
+  });
