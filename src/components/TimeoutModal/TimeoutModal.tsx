@@ -1,20 +1,18 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { useExtendProcessMutation, useFinishProcessMutation } from "../../api/mutations";
+interface ITimeoutModalProps {
+  onExtendProcess: () => void;
+  onFinishProcess: () => void;
+}
 
-const TimeoutModal = () => {
-  const queryClient = useQueryClient();
-  const extendProcessMutation = useExtendProcessMutation(queryClient);
-  const finishProcessMutation = useFinishProcessMutation(queryClient);
-
+const TimeoutModal = ({ onExtendProcess, onFinishProcess}: ITimeoutModalProps) => {
   return (
     <div role="dialog" aria-labelledby="timeout-title" aria-describedby="timeout-message">
       <h2 id="timeout-title">Session Timeout</h2>
       <p id="timeout-message">Your session has expired. Would you like to extend it or finish the process?</p>
       <div>
-        <button type="button" id="extend-button" onClick={() => extendProcessMutation.mutate()}>
+        <button type="button" id="extend-button" onClick={() => onExtendProcess()}>
           Extend Session
         </button>
-        <button type="button" id="finish-button" onClick={() => finishProcessMutation.mutate()}>
+        <button type="button" id="finish-button" onClick={() => onFinishProcess()}>
           Finish Process
         </button>
       </div>

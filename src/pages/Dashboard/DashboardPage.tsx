@@ -1,6 +1,12 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { usePauseProcessMutation, useResumeProcessMutation, useStartProcessMutation } from "../../api/mutations.ts";
+import {
+  useExtendProcessMutation,
+  useFinishProcessMutation,
+  usePauseProcessMutation,
+  useResumeProcessMutation,
+  useStartProcessMutation,
+} from "../../api/mutations.ts";
 import { useProcessStatus } from "../../api/queries.ts";
 import socket from "../../api/socket.ts";
 import TimeoutModal from "../../components/TimeoutModal/TimeoutModal.tsx";
@@ -15,6 +21,8 @@ const DashboardPage = () => {
   const startProcess = useStartProcessMutation(queryClient);
   const pauseProcess = usePauseProcessMutation(queryClient);
   const resumeProcess = useResumeProcessMutation(queryClient);
+  const extendProcessMutation = useExtendProcessMutation(queryClient);
+  const finishProcessMutation = useFinishProcessMutation(queryClient);
 
   const [message, setMessage] = useState("");
 
@@ -23,8 +31,8 @@ const DashboardPage = () => {
       setMessage(data.type);
       if (data.type === "PROCESS_TIMEOUT") {
         setIsTimeout(true);
-      } else { // data.type === "EXTENSION_TIMEOUT"
-
+      } else {
+        // data.type === "EXTENSION_TIMEOUT"
       } // TODO: Add error handling for invalid state
     });
 
@@ -53,10 +61,22 @@ const DashboardPage = () => {
     setIsRunning(true);
   };
 
+  const handleExtendProcess = () => {
+    extendProcessMutation.mutate();
+    setIsTimeout(false);
+  }
+
+  const handleFinishProcess = () => {
+    finishProcessMutation.mutate();
+    // TODO: Implement appropriate logic
+  }
+
   return (
     <main>
       <p>Message: {message}</p>
-      {isTimeout && <TimeoutModal />}
+      {isTimeout && (
+        <TimeoutModal onExtendProcess={handleExtendProcess} onFinishProcess={handleFinishProcess} />
+      )}
       <section aria-labelledby="process-info-heading">
         <h2 id="process-info-heading">Process Information</h2>
         <dl>
