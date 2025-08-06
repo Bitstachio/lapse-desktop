@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute.tsx";
-import DashboardPage from "../pages/Dashboard/DashboardPage.tsx";
+import DashboardPage from "../pages/Session/SessionPage.tsx";
 import LoginPage from "../pages/Login/LoginPage.tsx";
 
 const AppRoutes = () => {
