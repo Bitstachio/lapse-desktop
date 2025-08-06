@@ -32,3 +32,15 @@ export const useResumeProcessMutation = (queryClient: QueryClient) =>
       queryClient.invalidateQueries({ queryKey: ["process"] });
     },
   });
+
+export const useExtendProcessMutation = (queryClient: QueryClient) =>
+  useMutation({
+    mutationFn: () => api.patch("/process/extend"),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["process"] }),
+  });
+
+export const useFinishProcessMutation = (queryClient: QueryClient) =>
+  useMutation({
+    mutationFn: () => api.patch("/process/finish"),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["process"] }),
+  });

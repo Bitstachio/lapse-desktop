@@ -3,10 +3,12 @@ import { useEffect, useState } from "react";
 import { usePauseProcessMutation, useResumeProcessMutation, useStartProcessMutation } from "../../api/mutations.ts";
 import { useProcessStatus } from "../../api/queries.ts";
 import socket from "../../api/socket.ts";
+import TimeoutModal from "../../components/TimeoutModal/TimeoutModal.tsx";
 
 const DashboardPage = () => {
   const [isRunning, setIsRunning] = useState(true);
   const [remainingDuration, setRemainingDuration] = useState<number | undefined>();
+  const [isTimeout, setIsTimeout] = useState(false);
 
   const queryClient = useQueryClient();
   const processStatus = useProcessStatus();
@@ -18,8 +20,12 @@ const DashboardPage = () => {
 
   useEffect(() => {
     socket.on("process-timeout", (data) => {
-      console.log(data);
-      setMessage("Process has timed out: ");
+      setMessage(data.type);
+      if (data.type === "PROCESS_TIMEOUT") {
+        setIsTimeout(true);
+      } else { // data.type === "EXTENSION_TIMEOUT"
+
+      } // TODO: Add error handling for invalid state
     });
 
     return () => {
@@ -50,6 +56,7 @@ const DashboardPage = () => {
   return (
     <main>
       <p>Message: {message}</p>
+      {isTimeout && <TimeoutModal />}
       <section aria-labelledby="process-info-heading">
         <h2 id="process-info-heading">Process Information</h2>
         <dl>
