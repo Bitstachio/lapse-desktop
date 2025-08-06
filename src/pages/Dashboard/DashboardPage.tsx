@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { useProcessStatus } from "../../api/queries.ts";
-import { usePauseProcessMutation, useResumeProcessMutation, useStartProcessMutation } from "../../api/mutations.ts";
 import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { usePauseProcessMutation, useResumeProcessMutation, useStartProcessMutation } from "../../api/mutations.ts";
+import { useProcessStatus } from "../../api/queries.ts";
 import socket from "../../api/socket.ts";
 
 const DashboardPage = () => {
@@ -17,20 +17,15 @@ const DashboardPage = () => {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    socket.on("news", (data) => {
-      console.log("News from server:", data);
-      setMessage(data.msg);
-    });
-
     socket.on("process-timeout", (data) => {
-      console.log("Broadcast from other client:", data);
+      console.log(data);
+      setMessage("Process has timed out: ");
     });
 
     return () => {
-      socket.off("news");
-      socket.off("broadcast-message");
+      socket.off("process-timeout");
     };
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (processStatus.isSuccess && !processStatus.isFetching) {
