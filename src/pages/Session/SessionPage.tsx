@@ -10,6 +10,7 @@ import {
 import { useProcessStatus } from "../../api/queries.ts";
 import socket from "../../api/socket.ts";
 import TimeoutModal from "../../components/TimeoutModal/TimeoutModal.tsx";
+import Countdown from "../../components/Countdown/Countdown.tsx";
 
 const DashboardPage = () => {
   const [isRunning, setIsRunning] = useState(true);
@@ -77,6 +78,7 @@ const DashboardPage = () => {
       {isTimeout && (
         <TimeoutModal onExtendProcess={handleExtendProcess} onFinishProcess={handleFinishProcess} />
       )}
+      <Countdown initialDuration={remainingDuration} />
       <section aria-labelledby="process-info-heading">
         <h2 id="process-info-heading">Process Information</h2>
         <dl>
@@ -93,11 +95,11 @@ const DashboardPage = () => {
         </p>
         <div role="group" aria-label="Timer controls">
           {isRunning ? (
-            <button type="button" onClick={handlePause}>
+            <button type="button" onClick={handlePause} disabled={isTimeout}>
               Pause
             </button>
           ) : (
-            <button type="button" onClick={handleResume}>
+            <button type="button" onClick={handleResume} disabled={isTimeout}>
               Resume
             </button>
           )}
