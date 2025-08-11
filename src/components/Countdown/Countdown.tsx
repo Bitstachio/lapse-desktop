@@ -16,7 +16,7 @@ const Countdown = ({ initialDuration }: ICountdownProps) => {
     const interval = setInterval(() => {
       setRemainingDuration((prev) => {
         if (prev <= 1000) {
-          clearInterval(interval);
+          // clearInterval(interval);
           return 0;
         }
         return prev - 1000;
@@ -27,6 +27,7 @@ const Countdown = ({ initialDuration }: ICountdownProps) => {
   }, []);
 
   useEffect(() => {
+    // console.log(`Displaying duration - ${remainingDuration}`)
     const minutes = Math.floor(remainingDuration / 60_000);
     const seconds = Math.floor((remainingDuration % 60_000) / 1000);
     const formatted = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
