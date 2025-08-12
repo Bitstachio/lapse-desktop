@@ -7,8 +7,12 @@ const useCountdown = (processState: TProcessState, startingDuration?: number) =>
   const interval = useRef<NodeJS.Timeout | null>(null);
 
   const reset = () => {
-    // TODO: Implement this function
-  }
+    if (interval.current) {
+      clearInterval(interval.current);
+      interval.current = null;
+      setRemainingDuration(0);
+    }
+  };
 
   useEffect(() => {
     if (!startingDuration) return;

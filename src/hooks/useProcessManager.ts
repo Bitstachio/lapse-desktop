@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   useExtendProcessMutation,
   useFinishProcessMutation,
@@ -8,6 +8,7 @@ import {
   useStartProcessMutation,
 } from "../api/mutations";
 import { useProcessStatus } from "../api/queries";
+import socket from "../api/socket";
 import { TProcessState } from "../types/process";
 
 const useProcessManager = (component: string, quantity: number) => {
@@ -21,6 +22,21 @@ const useProcessManager = (component: string, quantity: number) => {
   const resumeMutation = useResumeProcessMutation(queryClient);
   const extendMutation = useExtendProcessMutation(queryClient);
   const finishMutation = useFinishProcessMutation(queryClient);
+
+  useEffect(() => {
+    socket.on("process-timeout", (data) => {
+      if (data.type === "PROCESS_TIMEOUT") {
+        setState("timeout");
+      } else {
+        // data.type === "EXTENSION_TIMEOUT"
+        setState("inactive");
+      }
+    });
+
+    return () => {
+      socket.off("process-timeout");
+    };
+  }, []);
 
   const start = () => {
     startMutation.mutate({ component, quantity });
