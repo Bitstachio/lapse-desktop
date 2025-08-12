@@ -8,9 +8,10 @@ import {
   useStartProcessMutation,
 } from "../api/mutations";
 import { useProcessStatus } from "../api/queries";
+import { TProcessState } from "../types/process";
 
 const useProcessManager = (component: string, quantity: number) => {
-  const [isRunning, setIsRunning] = useState(false);
+  const [state, setState] = useState<TProcessState>("inactive");
 
   const queryClient = useQueryClient();
 
@@ -23,30 +24,31 @@ const useProcessManager = (component: string, quantity: number) => {
 
   const start = () => {
     startMutation.mutate({ component, quantity });
-    setIsRunning(true);
+    setState("running");
   };
 
   const pause = () => {
     pauseMutation.mutate();
-    setIsRunning(false);
+    setState("paused");
   };
 
   const resume = () => {
     resumeMutation.mutate();
-    setIsRunning(true);
+    setState("running");
   };
 
   const extend = () => {
     extendMutation.mutate();
+    setState("running");
   };
 
   const finish = () => {
     finishMutation.mutate();
-    setIsRunning(false);
+    setState("inactive");
   };
 
   return {
-    isRunning,
+    state,
     status,
     start,
     pause,

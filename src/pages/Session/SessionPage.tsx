@@ -19,7 +19,7 @@ const DashboardPage = () => {
         setIsTimeout(true);
       } else {
         // data.type === "EXTENSION_TIMEOUT"
-      } // TODO: Add error handling for invalid state
+      }
     });
 
     return () => {
@@ -37,7 +37,7 @@ const DashboardPage = () => {
     <main>
       <p>Message: {message}</p>
       {isTimeout && <TimeoutModal onExtendProcess={processManager.extend} onFinishProcess={processManager.finish} />}
-      <Countdown startingDuration={remainingDuration} isRunning={processManager.isRunning} />
+      <Countdown processState={processManager.state} startingDuration={remainingDuration} />
       <button onClick={processManager.start}>Start</button>
       <section aria-labelledby="process-info-heading">
         <h2 id="process-info-heading">Process Information</h2>
@@ -54,7 +54,7 @@ const DashboardPage = () => {
           00:05:42
         </p>
         <div role="group" aria-label="Timer controls">
-          {processManager.isRunning ? (
+          {processManager.state === "running" ? (
             <button type="button" onClick={processManager.pause} disabled={isTimeout}>
               Pause
             </button>

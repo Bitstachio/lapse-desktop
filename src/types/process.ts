@@ -1,4 +1,4 @@
-export type TProcessState = "running" | "paused" | "timeout";
+export type TProcessState = "running" | "paused" | "timeout" | "inactive";
 
 export interface IInterval {
   startTime: Date;

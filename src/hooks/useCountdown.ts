@@ -1,21 +1,28 @@
 import { useEffect, useRef, useState } from "react";
+import { TProcessState } from "../types/process";
 
-const useCountdown = (isRunning: boolean, startingDuration?: number) => {
+const useCountdown = (processState: TProcessState, startingDuration?: number) => {
   const [remainingDuration, setRemainingDuration] = useState(0);
   const [formattedTime, setFormattedTime] = useState("");
   const interval = useRef<NodeJS.Timeout | null>(null);
+
+  const reset = () => {
+    // TODO: Implement this function
+  }
 
   useEffect(() => {
     if (!startingDuration) return;
     setRemainingDuration(startingDuration);
 
-    if (isRunning && !interval.current) {
+    if (processState === "inactive") reset();
+
+    if (processState === "running" && !interval.current) {
       interval.current = setInterval(() => setRemainingDuration((prev) => prev - 1000), 1000);
-    } else if (!isRunning && interval.current) {
+    } else if (processState === "paused" && interval.current) {
       clearInterval(interval.current);
       interval.current = null;
     }
-  }, [startingDuration, isRunning]);
+  }, [startingDuration, processState]);
 
   useEffect(() => {
     const minutes = Math.floor(remainingDuration / 60_000);
