@@ -1,12 +1,12 @@
 import useCountdown from "../../hooks/useCountdown";
 
 interface ICountdownProps {
-  initialDuration: number | undefined;
+  startingDuration: number | undefined;
   isRunning: boolean;
 }
 
-const Countdown = ({ initialDuration, isRunning }: ICountdownProps) => {
-  const { formattedTime } = useCountdown(isRunning, initialDuration);
+const Countdown = ({ startingDuration, isRunning }: ICountdownProps) => {
+  const { formattedTime } = useCountdown(isRunning, startingDuration);
 
   return (
     <p aria-live="polite" role="status">

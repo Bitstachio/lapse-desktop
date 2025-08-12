@@ -37,7 +37,7 @@ const DashboardPage = () => {
     <main>
       <p>Message: {message}</p>
       {isTimeout && <TimeoutModal onExtendProcess={processManager.extend} onFinishProcess={processManager.finish} />}
-      <Countdown initialDuration={remainingDuration} isRunning={processManager.isRunning} />
+      <Countdown startingDuration={remainingDuration} isRunning={processManager.isRunning} />
       <button onClick={processManager.start}>Start</button>
       <section aria-labelledby="process-info-heading">
         <h2 id="process-info-heading">Process Information</h2>
