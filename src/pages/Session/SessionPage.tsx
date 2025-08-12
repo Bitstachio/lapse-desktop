@@ -1,31 +1,16 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import {
-  useExtendProcessMutation,
-  useFinishProcessMutation,
-  usePauseProcessMutation,
-  useResumeProcessMutation,
-  useStartProcessMutation,
-} from "../../api/mutations.ts";
-import { useProcessStatus } from "../../api/queries.ts";
 import socket from "../../api/socket.ts";
-import TimeoutModal from "../../components/TimeoutModal/TimeoutModal.tsx";
 import Countdown from "../../components/Countdown/Countdown.tsx";
+import TimeoutModal from "../../components/TimeoutModal/TimeoutModal.tsx";
+import useProcessManager from "../../hooks/useProcessManager.ts";
 
 const DashboardPage = () => {
-  const [isRunning, setIsRunning] = useState(true);
   const [remainingDuration, setRemainingDuration] = useState<number | undefined>();
   const [isTimeout, setIsTimeout] = useState(false);
 
-  const queryClient = useQueryClient();
-  const processStatus = useProcessStatus();
-  const startProcess = useStartProcessMutation(queryClient);
-  const pauseProcess = usePauseProcessMutation(queryClient);
-  const resumeProcess = useResumeProcessMutation(queryClient);
-  const extendProcessMutation = useExtendProcessMutation(queryClient);
-  const finishProcessMutation = useFinishProcessMutation(queryClient);
-
   const [message, setMessage] = useState("");
+
+  const processManager = useProcessManager("BX50", 4);
 
   useEffect(() => {
     socket.on("process-timeout", (data) => {
@@ -43,42 +28,17 @@ const DashboardPage = () => {
   }, []);
 
   useEffect(() => {
-    if (processStatus.isSuccess && !processStatus.isFetching) {
-      if (processStatus.data) {
-        setRemainingDuration(processStatus.data.interval.remainingDuration);
-      } else {
-        // startProcess.mutate({ component: "BX50", quantity: 4 });
-      }
+    if (processManager.status.isSuccess && !processManager.status.isFetching && processManager.status.data) {
+      setRemainingDuration(processManager.status.data.interval.remainingDuration);
     }
-  }, [processStatus, startProcess]);
-
-  const handlePause = () => {
-    pauseProcess.mutate();
-    setIsRunning(false);
-  };
-
-  const handleResume = () => {
-    resumeProcess.mutate();
-    setIsRunning(true);
-  };
-
-  const handleExtendProcess = () => {
-    extendProcessMutation.mutate();
-    setIsTimeout(false);
-  }
-
-  const handleFinishProcess = () => {
-    finishProcessMutation.mutate();
-    // TODO: Implement appropriate logic
-  }
+  }, [processManager.status]);
 
   return (
     <main>
       <p>Message: {message}</p>
-      {isTimeout && (
-        <TimeoutModal onExtendProcess={handleExtendProcess} onFinishProcess={handleFinishProcess} />
-      )}
+      {isTimeout && <TimeoutModal onExtendProcess={processManager.extend} onFinishProcess={processManager.finish} />}
       <Countdown initialDuration={remainingDuration} />
+      <button onClick={processManager.start}>Start</button>
       <section aria-labelledby="process-info-heading">
         <h2 id="process-info-heading">Process Information</h2>
         <dl>
@@ -94,12 +54,12 @@ const DashboardPage = () => {
           00:05:42
         </p>
         <div role="group" aria-label="Timer controls">
-          {isRunning ? (
-            <button type="button" onClick={handlePause} disabled={isTimeout}>
+          {processManager.isRunning ? (
+            <button type="button" onClick={processManager.pause} disabled={isTimeout}>
               Pause
             </button>
           ) : (
-            <button type="button" onClick={handleResume} disabled={isTimeout}>
+            <button type="button" onClick={processManager.resume} disabled={isTimeout}>
               Resume
             </button>
           )}
