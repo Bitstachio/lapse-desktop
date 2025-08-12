@@ -1,33 +1,39 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface ICountdownProps {
   initialDuration: number | undefined;
+  isRunning: boolean;
 }
 
-const Countdown = ({ initialDuration }: ICountdownProps) => {
+const Countdown = ({ initialDuration, isRunning }: ICountdownProps) => {
   const [remainingDuration, setRemainingDuration] = useState(0);
   const [formattedTime, setFormattedTime] = useState("");
+  const interval = useRef<NodeJS.Timeout | null>(null); // TODO: Determine appropriate type
 
   useEffect(() => {
-    if (initialDuration) setRemainingDuration(initialDuration);
-  }, [initialDuration]);
+    if (initialDuration) {
+      setRemainingDuration(initialDuration);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setRemainingDuration((prev) => {
-        if (prev <= 1000) {
-          // clearInterval(interval);
-          return 0;
+      if (isRunning) {
+        if (!interval.current) {
+          interval.current = setInterval(() => {
+            setRemainingDuration((prev) => {
+              return prev - 1000;
+            });
+          }, 1000);
         }
-        return prev - 1000;
-      });
-    }, 1000);
+      } else {
+        if (interval.current) {
+          clearInterval(interval.current);
+          interval.current = null;
+        }
+      }
+    }
 
-    return () => clearInterval(interval);
-  }, []);
+    if (initialDuration) setRemainingDuration(initialDuration);
+  }, [initialDuration, isRunning]);
 
   useEffect(() => {
-    // console.log(`Displaying duration - ${remainingDuration}`)
     const minutes = Math.floor(remainingDuration / 60_000);
     const seconds = Math.floor((remainingDuration % 60_000) / 1000);
     const formatted = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
