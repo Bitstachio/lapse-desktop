@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import socket from "../../api/socket.ts";
 import Countdown from "../../components/Countdown/Countdown.tsx";
+import CountdownController from "../../components/CountdownController/CountdownController.tsx";
 import TimeoutModal from "../../components/TimeoutModal/TimeoutModal.tsx";
 import useProcessManager from "../../hooks/useProcessManager.ts";
 
@@ -39,32 +40,11 @@ const DashboardPage = () => {
       {isTimeout && <TimeoutModal onExtendProcess={processManager.extend} onFinishProcess={processManager.finish} />}
       <Countdown processState={processManager.state} startingDuration={remainingDuration} />
       <button onClick={processManager.start}>Start</button>
-      <section aria-labelledby="process-info-heading">
-        <h2 id="process-info-heading">Process Information</h2>
-        <dl>
-          <div>
-            <dt>Status</dt>
-            <dd>{remainingDuration ?? "Inactive"}</dd>
-          </div>
-        </dl>
-      </section>
-      <section aria-labelledby="timer-heading">
-        <h2 id="timer-heading">Timer</h2>
-        <p aria-live="polite" role="status">
-          00:05:42
-        </p>
-        <div role="group" aria-label="Timer controls">
-          {processManager.state === "running" ? (
-            <button type="button" onClick={processManager.pause} disabled={isTimeout}>
-              Pause
-            </button>
-          ) : (
-            <button type="button" onClick={processManager.resume} disabled={isTimeout}>
-              Resume
-            </button>
-          )}
-        </div>
-      </section>
+      <CountdownController
+        state={processManager.state}
+        onPause={processManager.pause}
+        onResume={processManager.resume}
+      />
     </main>
   );
 };
