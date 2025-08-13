@@ -4,7 +4,7 @@ import CountdownController from "../../components/CountdownController/CountdownC
 import TimeoutModal from "../../components/TimeoutModal/TimeoutModal.tsx";
 import useProcessManager from "../../hooks/useProcessManager.ts";
 
-const DashboardPage = () => {
+const SessionPage = () => {
   const [remainingDuration, setRemainingDuration] = useState<number | undefined>();
 
   const { state, status, start, pause, resume, extend, finish } = useProcessManager("BX50", 4);
@@ -17,11 +17,14 @@ const DashboardPage = () => {
 
   return (
     <main>
-      {state === "timeout" && <TimeoutModal onExtend={extend} onFinish={finish} />}
       <Countdown processState={state} startingDuration={remainingDuration} />
-      <CountdownController state={state} onStart={start} onPause={pause} onResume={resume} />
+      {state === "timeout" ? (
+        <TimeoutModal onExtend={extend} onFinish={finish} />
+      ) : (
+        <CountdownController state={state} onStart={start} onPause={pause} onResume={resume} />
+      )}
     </main>
   );
 };
 
-export default DashboardPage;
+export default SessionPage;

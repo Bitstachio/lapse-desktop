@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute.tsx";
-import DashboardPage from "../pages/Session/SessionPage.tsx";
+import SessionPage from "../pages/Session/SessionPage.tsx";
 import LoginPage from "../pages/Login/LoginPage.tsx";
 
 const AppRoutes = () => {
@@ -10,7 +10,7 @@ const AppRoutes = () => {
         path="/"
         element={
           <ProtectedRoute>
-            <DashboardPage />
+            <SessionPage />
           </ProtectedRoute>
         }
       />
