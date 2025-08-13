@@ -29,9 +29,12 @@ const useCountdown = (processState: TProcessState, startingDuration?: number) =>
   }, [startingDuration, processState]);
 
   useEffect(() => {
-    const minutes = Math.floor(remainingDuration / 60_000);
-    const seconds = Math.floor((remainingDuration % 60_000) / 1000);
-    setFormattedTime(`${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`);
+    const absoluteDuration = Math.abs(remainingDuration);
+    const isNegative = remainingDuration < 0;
+
+    const minutes = Math.floor(absoluteDuration / 60_000);
+    const seconds = Math.floor((absoluteDuration % 60_000) / 1000);
+    setFormattedTime(`${isNegative ? "-" : ""}${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`);
   }, [remainingDuration]);
 
   // TODO: Determine whether using a state for formattedTime is appropriate
