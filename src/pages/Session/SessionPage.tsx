@@ -39,9 +39,9 @@ const DashboardPage = () => {
       <p>Message: {message}</p>
       {isTimeout && <TimeoutModal onExtendProcess={processManager.extend} onFinishProcess={processManager.finish} />}
       <Countdown processState={processManager.state} startingDuration={remainingDuration} />
-      <button onClick={processManager.start}>Start</button>
       <CountdownController
         state={processManager.state}
+        onStart={processManager.start}
         onPause={processManager.pause}
         onResume={processManager.resume}
       />
