@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import Countdown from "../../components/Countdown/Countdown.tsx";
-import CountdownController from "../../components/CountdownController/CountdownController.tsx";
-import TimeoutModal from "../../components/TimeoutModal/TimeoutModal.tsx";
-import useProcessManager from "../../hooks/useProcessManager.ts";
+import Countdown from "../../features/countdown/components/Countdown/Countdown.tsx";
+import CountdownController from "../../features/countdown/components/CountdownController/CountdownController.tsx";
+import TimeoutModal from "../../features/countdown/components/TimeoutModal/TimeoutModal.tsx";
+import useProcessManager from "../../features/process/hooks/useProcessManager.ts";
 
 const SessionPage = () => {
   const [remainingDuration, setRemainingDuration] = useState<number | undefined>();

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { TProcessState } from "../types/process";
-import { formatProcessDuration } from "../utils/time";
+import { TProcessState } from "../../process/types";
+import { formatProcessDuration } from "../utils";
 
 const useCountdown = (processState: TProcessState, startingDuration = 0) => {
   const [remainingDuration, setRemainingDuration] = useState(0);

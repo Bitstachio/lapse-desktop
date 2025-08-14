@@ -1,7 +1,7 @@
-import { InvalidArgumentError } from "../errors/InvalidArgumentError";
-import { UnexpectedProcessStateError } from "../errors/UnexpectedProcessStateError";
-import { TProcessState } from "../types/process";
-import { assertNever } from "./common";
+import { InvalidArgumentError } from "../../errors/InvalidArgumentError";
+import { UnexpectedProcessStateError } from "../../errors/UnexpectedProcessStateError";
+import { TProcessState } from "../process/types";
+import { assertNever } from "../../utils/common";
 
 export const formatDuration = (duration: number) => {
   if (duration < 0) throw new InvalidArgumentError("Duration must not be negative");

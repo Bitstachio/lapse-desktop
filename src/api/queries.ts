@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import api from "./api.ts";
-import { IProcess } from "../types/process.ts";
+import { IProcess } from "../features/process/types.ts";
 
 export const useProcessStatus = () =>
   useQuery<IProcess>({

@@ -1,4 +1,4 @@
-import { TProcessState } from "../types/process";
+import { TProcessState } from "../features/process/types";
 
 // TODO: Add more parameters
 export class UnexpectedProcessStateError extends Error {

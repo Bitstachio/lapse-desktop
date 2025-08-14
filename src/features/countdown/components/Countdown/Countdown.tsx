@@ -1,5 +1,5 @@
 import useCountdown from "../../hooks/useCountdown";
-import { TProcessState } from "../../types/process";
+import { TProcessState } from "../../../process/types";
 
 interface ICountdownProps {
   processState: TProcessState;

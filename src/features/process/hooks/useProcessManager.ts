@@ -6,10 +6,10 @@ import {
   usePauseProcessMutation,
   useResumeProcessMutation,
   useStartProcessMutation,
-} from "../api/mutations";
-import { useProcessStatus } from "../api/queries";
-import socket from "../api/socket";
-import { TProcessState } from "../types/process";
+} from "../../../api/mutations";
+import { useProcessStatus } from "../../../api/queries";
+import socket from "../../../api/socket";
+import { TProcessState } from "../types";
 
 const useProcessManager = (component: string, quantity: number) => {
   const [state, setState] = useState<TProcessState>("inactive");

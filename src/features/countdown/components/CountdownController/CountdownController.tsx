@@ -1,4 +1,4 @@
-import { TProcessState } from "../../types/process";
+import { TProcessState } from "../../../process/types";
 
 interface ICountdownControllerProps {
   state: TProcessState;

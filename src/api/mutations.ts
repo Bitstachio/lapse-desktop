@@ -1,5 +1,5 @@
 import { QueryClient, useMutation } from "@tanstack/react-query";
-import { IProcessStartDto } from "../types/process.ts";
+import { IProcessStartDto } from "../features/process/types.ts";
 import api from "./api.ts";
 
 export const useStartProcessMutation = (queryClient: QueryClient) =>
