@@ -6,8 +6,8 @@ import {
   usePauseProcessMutation,
   useResumeProcessMutation,
   useStartProcessMutation,
-} from "../../../app/api/mutations";
-import { useProcessStatus } from "../../../app/api/queries";
+} from "../api/mutations";
+import { useProcessStatus } from "../api/queries";
 import socket from "../../../app/api/socket";
 import { TProcessState } from "../types";
 
