@@ -1,6 +1,7 @@
 import { InvalidArgumentError } from "../errors/InvalidArgumentError";
 import { UnexpectedProcessStateError } from "../errors/UnexpectedProcessStateError";
 import { TProcessState } from "../types/process";
+import { assertNever } from "./common";
 
 export const formatDuration = (duration: number) => {
   if (duration < 0) throw new InvalidArgumentError("Duration must not be negative");
@@ -17,8 +18,14 @@ export const formatProcessDuration = (state: TProcessState, startingDuration: nu
   if (state === "inactive" && startingDuration !== 0 && remainingDuration !== 0)
     throw new UnexpectedProcessStateError(state);
 
-  if (state === "timeout") return `-${formatDuration(startingDuration - remainingDuration)}`;
-  return formatDuration(remainingDuration > 0 ? remainingDuration : 0);
-  // TODO: Incorporate `never` to detect error at compile-time
-  // throw new UnhandledCaseError(state);
+  switch (state) {
+    case "timeout":
+      return `-${formatDuration(startingDuration - remainingDuration)}`;
+    case "inactive":
+    case "running":
+    case "paused":
+      return formatDuration(remainingDuration > 0 ? remainingDuration : 0);
+    default:
+      throw assertNever(state);
+  }
 };
