@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { TProcessState } from "../types/process";
 import { formatProcessDuration } from "../utils/time";
 
-const useCountdown = (processState: TProcessState, startingDuration?: number) => {
+const useCountdown = (processState: TProcessState, startingDuration = 0) => {
   const [remainingDuration, setRemainingDuration] = useState(0);
   const [formattedTime, setFormattedTime] = useState("");
   const interval = useRef<NodeJS.Timeout | null>(null);
@@ -30,7 +30,7 @@ const useCountdown = (processState: TProcessState, startingDuration?: number) =>
   }, [processState, startingDuration]);
 
   useEffect(() => {
-    setFormattedTime(formatProcessDuration(processState, remainingDuration, startingDuration ?? 0));
+    setFormattedTime(formatProcessDuration(processState, startingDuration, remainingDuration));
   }, [remainingDuration]);
 
   // TODO: Determine whether using a state for formattedTime is appropriate
