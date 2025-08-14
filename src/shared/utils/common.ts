@@ -1,4 +1,4 @@
-import { UnhandledCaseError } from "../errors/UnhandledCaseError";
+import { UnhandledCaseError } from "../../errors/UnhandledCaseError";
 
 /**
  * Asserts that a given value is of type `never`, enabling compile-time
