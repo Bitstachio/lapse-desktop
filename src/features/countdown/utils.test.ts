@@ -1,27 +1,64 @@
 import "@testing-library/jest-dom/vitest";
 import { describe, expect, it } from "vitest";
-import { formatDuration } from "./utils.ts";
+import { InvalidArgumentError } from "../../errors/InvalidArgumentError.ts";
+import { UnexpectedProcessStateError } from "../../errors/UnexpectedProcessStateError.ts";
+import { formatDuration, formatProcessDuration, padTime } from "./utils.ts";
 
-describe("formatDuration", () => {
-  it("throws error for negative duration", () => {
-    // TODO: Determine how to throw error of particular type
-    expect(formatDuration(-1)).toThrow();
+describe("padTime", () => {
+  it("throws error for negative value", () => {
+    expect(() => padTime(-1)).toThrow(InvalidArgumentError);
   });
 
   it("works properly for 0", () => {
-    // TODO: Determine .toEqual to .toStrictEqual
-    expect(formatDuration(0)).toEqual("00:00");
+    expect(padTime(0)).toEqual("00");
   });
 
-  it("pads single-digit minutes properly", () => {
-    expect(formatDuration(260_000)).toEqual("04:20");
+  it("works properly for single-digit value", () => {
+    expect(padTime(4)).toEqual("04");
   });
 
-  it("pads single-digit seconds properly", () => {
-    expect(formatDuration(242_000)).toEqual("04:02");
+  it("works properly for two-digit value", () => {
+    expect(padTime(24)).toEqual("24");
+  });
+
+  it("works properly for more than two-digit value", () => {
+    expect(padTime(1234)).toEqual("1234");
+  });
+});
+
+describe("formatDuration", () => {
+  // TODO: Having tested padding, how should I approach testing functions built on top of it?
+
+  it("throws error for negative duration", () => {
+    expect(() => formatDuration(-1)).toThrow(InvalidArgumentError);
   });
 
   it("rounds down seconds properly", () => {
-    expect(formatDuration(260_800)).toEqual("04:20"); // 20.8 seconds
+    expect(formatDuration(260_800)).toEqual("00:04:20"); // 20.8 seconds
+  });
+});
+
+describe("formatProcessDuration", () => {
+  // TODO: Parametrize for all states
+  it("throws error when starting duration is less than remaining duration", () => {
+    expect(() => formatProcessDuration("inactive", 4, 5)).toThrow(InvalidArgumentError);
+  });
+
+  // TODO: Parameterize for different starting and remaining combinations
+  it("throws error when reaching function in inactive state and non-zero starting and remaining times", () => {
+    expect(() => formatProcessDuration("inactive", 1, 1)).toThrow(UnexpectedProcessStateError);
+  });
+
+  // TODO: Parameterize for all states
+  it("", () => {
+    expect(formatProcessDuration("inactive", 0, 0)).toEqual("00:00:00");
+  });
+
+  it("timeout has a negative sign", () => {
+    expect(formatProcessDuration("timeout", 5_025_000, 0)).toEqual("-01:23:45");
+  });
+
+  it("formats timeout countdown using the difference of starting and remaining durations", () => {
+    expect(formatProcessDuration("timeout", 5_045_000, 20_000)).toEqual("-01:23:45");
   });
 });
