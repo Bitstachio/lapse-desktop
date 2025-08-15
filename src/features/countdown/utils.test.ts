@@ -1,8 +1,8 @@
 import "@testing-library/jest-dom/vitest";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { InvalidArgumentError } from "../../errors/InvalidArgumentError.ts";
-import { formatDuration, formatProcessDuration, formatTimeUnit } from "./utils.ts";
 import { UnexpectedProcessStateError } from "../../errors/UnexpectedProcessStateError.ts";
+import { formatDuration, formatProcessDuration, formatTimeUnit } from "./utils.ts";
 
 describe(formatTimeUnit.name, () => {
   it("throws error for negative value", () => {
@@ -30,15 +30,32 @@ describe(formatTimeUnit.name, () => {
   });
 });
 
-describe("formatDuration", () => {
-  // TODO: Having tested padding, how should I approach testing functions built on top of it?
-
+describe(formatDuration.name, () => {
   it("throws error for negative duration", () => {
-    expect(() => formatDuration(-1)).toThrow(InvalidArgumentError);
+    const mockFormatter = vi.fn();
+    expect(() => formatDuration(-1, mockFormatter)).toThrow(InvalidArgumentError);
   });
 
-  it("rounds down seconds properly", () => {
-    expect(formatDuration(260_800)).toEqual("00:04:20"); // 20.8 seconds
+  it.each([
+    { scenario: "zero duration correctly", duration: 0, expected: [0, 0, 0] },
+    { scenario: "long duration into hours, minutes, and seconds", duration: 5_025_000, expected: [1, 23, 45] },
+    { scenario: "durations exceeding 24 hours", duration: 90_000_000, expected: [25, 0, 0] },
+    // Rollovers and rounding behavior
+    { scenario: "sub-second duration correctly", duration: 999, expected: [0, 0, 0] },
+    { scenario: "seconds-to-minutes rollover", duration: 59_999, expected: [0, 0, 59] },
+    { scenario: "exactly one minute", duration: 60_000, expected: [0, 1, 0] },
+    { scenario: "minutes-to-hours rollover", duration: 3_599_999, expected: [0, 59, 59] },
+    { scenario: "exactly one hour", duration: 3_600_000, expected: [1, 0, 0] },
+    { scenario: "hours-to-next-hour rollover", duration: 3_959_999, expected: [1, 5, 59] },
+    { scenario: "multi-hour rollover edge", duration: 86_399_999, expected: [23, 59, 59] },
+  ])("formats $scenario", ({ duration, expected }) => {
+    const mockFormatter = vi.fn((unit: number) => `unit-${unit}`);
+    const result = formatDuration(duration, mockFormatter);
+    const mockReturns = mockFormatter.mock.results;
+
+    expect(mockFormatter).toHaveBeenCalledTimes(3);
+    expected.forEach((unit, index) => expect(mockFormatter).toHaveBeenNthCalledWith(index + 1, unit));
+    expect(result).toBe(`${mockReturns[0].value}:${mockReturns[1].value}:${mockReturns[2].value}`);
   });
 });
 

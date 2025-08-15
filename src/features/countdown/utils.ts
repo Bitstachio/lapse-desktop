@@ -9,14 +9,14 @@ export const formatTimeUnit = (unit: number) => {
   return `${String(unit).padStart(2, "0")}`;
 };
 
-export const formatDuration = (duration: number) => {
+export const formatDuration = (duration: number, formatter: (unit: number) => string) => {
   if (duration < 0) throw new InvalidArgumentError("Duration must not be negative");
 
   const hours = Math.floor(duration / 3_600_000);
   const minutes = Math.floor((duration % 3_600_000) / 60_000);
   const seconds = Math.floor(((duration % 3_600_000) % 60_000) / 1000);
 
-  return `${formatTimeUnit(hours)}:${formatTimeUnit(minutes)}:${formatTimeUnit(seconds)}`;
+  return `${formatter(hours)}:${formatter(minutes)}:${formatter(seconds)}`;
 };
 
 export const formatProcessDuration = (state: TProcessState, startingDuration: number, remainingDuration: number) => {
@@ -27,11 +27,11 @@ export const formatProcessDuration = (state: TProcessState, startingDuration: nu
 
   switch (state) {
     case "timeout":
-      return `-${formatDuration(startingDuration - remainingDuration)}`;
+      return `-${formatDuration(startingDuration - remainingDuration, formatTimeUnit)}`;
     case "inactive":
     case "running":
     case "paused":
-      return formatDuration(remainingDuration > 0 ? remainingDuration : 0);
+      return formatDuration(remainingDuration > 0 ? remainingDuration : 0, formatTimeUnit);
     default:
       throw assertNever(state);
   }
