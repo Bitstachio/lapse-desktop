@@ -3,9 +3,10 @@ import { UnexpectedProcessStateError } from "../../errors/UnexpectedProcessState
 import { assertNever } from "../../shared/utils/common";
 import { TProcessState } from "../process/types";
 
-export const padTime = (value: number) => {
-  if (value < 0) throw new InvalidArgumentError("Value must not be negative");
-  return `${String(value).padStart(2, "0")}`;
+export const formatTimeUnit = (unit: number) => {
+  if (unit < 0) throw new InvalidArgumentError("Value must not be negative");
+  if (!Number.isInteger(unit)) throw new InvalidArgumentError("Value must be an integer");
+  return `${String(unit).padStart(2, "0")}`;
 };
 
 export const formatDuration = (duration: number) => {
@@ -13,9 +14,9 @@ export const formatDuration = (duration: number) => {
 
   const hours = Math.floor(duration / 3_600_000);
   const minutes = Math.floor((duration % 3_600_000) / 60_000);
-  const seconds = Math.floor((duration % 3_600_000 % 60_000) / 1000);
+  const seconds = Math.floor(((duration % 3_600_000) % 60_000) / 1000);
 
-  return `${padTime(hours)}:${padTime(minutes)}:${padTime(seconds)}`;
+  return `${formatTimeUnit(hours)}:${formatTimeUnit(minutes)}:${formatTimeUnit(seconds)}`;
 };
 
 export const formatProcessDuration = (state: TProcessState, startingDuration: number, remainingDuration: number) => {

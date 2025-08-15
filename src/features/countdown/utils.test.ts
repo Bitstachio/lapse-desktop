@@ -1,28 +1,32 @@
 import "@testing-library/jest-dom/vitest";
 import { describe, expect, it } from "vitest";
 import { InvalidArgumentError } from "../../errors/InvalidArgumentError.ts";
+import { formatDuration, formatProcessDuration, formatTimeUnit } from "./utils.ts";
 import { UnexpectedProcessStateError } from "../../errors/UnexpectedProcessStateError.ts";
-import { formatDuration, formatProcessDuration, padTime } from "./utils.ts";
 
-describe("padTime", () => {
+describe(formatTimeUnit.name, () => {
   it("throws error for negative value", () => {
-    expect(() => padTime(-1)).toThrow(InvalidArgumentError);
+    expect(() => formatTimeUnit(-1)).toThrow(InvalidArgumentError);
   });
 
-  it("works properly for 0", () => {
-    expect(padTime(0)).toEqual("00");
+  it.each([
+    { unit: -1, scenario: "negative" },
+    { unit: 0.1, scenario: "not an integer" },
+    { unit: Number.NaN, scenario: "NaN" },
+    { unit: Number.POSITIVE_INFINITY, scenario: "infinity" },
+    { unit: Number.NEGATIVE_INFINITY, scenario: "negative infinity" },
+  ])("throws InvalidArgumentError when value is $scenario", ({ unit }) => {
+    expect(() => formatTimeUnit(unit)).toThrow(InvalidArgumentError);
   });
 
-  it("works properly for single-digit value", () => {
-    expect(padTime(4)).toEqual("04");
-  });
-
-  it("works properly for two-digit value", () => {
-    expect(padTime(24)).toEqual("24");
-  });
-
-  it("works properly for more than two-digit value", () => {
-    expect(padTime(1234)).toEqual("1234");
+  it.each([
+    { unit: 0, expected: "00", scenario: "zero" },
+    { unit: -0, expected: "00", scenario: "negative zero" },
+    { unit: 1, expected: "01", scenario: "a single digit" },
+    { unit: 99, expected: "99", scenario: "upper two digits" },
+    { unit: 1234, expected: "1234", scenario: "more than two digits" },
+  ])("formats properly when unit is $scenario", ({ unit, expected }) => {
+    expect(formatTimeUnit(unit)).toEqual(expected);
   });
 });
 
