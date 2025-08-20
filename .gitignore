@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Build output (Electron Builder / Forge / Vite)
+dist/
+release/
+out/
+build/
