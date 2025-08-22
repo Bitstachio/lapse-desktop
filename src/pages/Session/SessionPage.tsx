@@ -4,15 +4,15 @@ import TimeoutModal from "../../features/countdown/components/TimeoutModal/Timeo
 import useProcessManager from "../../features/process/hooks/useProcessManager.ts";
 
 const SessionPage = () => {
-  const { state, status, start, pause, resume, extend, finish } = useProcessManager("BX50", 4);
+  const { status, start, pause, resume, extend, finish } = useProcessManager("BX50", 4);
 
   return (
     <main>
-      <Countdown processState={state} processStatus={status} />
-      {state === "timeout" ? (
+      <Countdown processStatus={status} />
+      {status.data && status.data.state === "timeout" ? (
         <TimeoutModal onExtend={extend} onFinish={finish} />
       ) : (
-        <CountdownController state={state} onStart={start} onPause={pause} onResume={resume} />
+        <CountdownController state={status.data?.state ?? "inactive"} onStart={start} onPause={pause} onResume={resume} />
       )}
     </main>
   );

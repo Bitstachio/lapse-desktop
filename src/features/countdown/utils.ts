@@ -19,7 +19,7 @@ export const formatDuration = (duration: number, formatter: (unit: number) => st
   return `${formatter(hours)}:${formatter(minutes)}:${formatter(seconds)}`;
 };
 
-export const formatProcessDuration = (state: TProcessState, startingDuration: number, remainingDuration: number) => {
+export const formatProcessDuration = (state: TProcessState = "inactive", startingDuration: number = 0, remainingDuration: number = 0) => {
   if (startingDuration < remainingDuration)
     throw new InvalidArgumentError("Starting duration cannot be less than remaining duration");
   if (state === "inactive" && startingDuration !== 0 && remainingDuration !== 0)

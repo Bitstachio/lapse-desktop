@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { TProcessState } from "../../process/types";
 import { TProcessStatus } from "../types";
 import { formatProcessDuration } from "../utils";
 
-const useCountdown = (processState: TProcessState, processStatus: TProcessStatus) => {
+const useCountdown = (processStatus: TProcessStatus) => {
   const [remainingDuration, setRemainingDuration] = useState(0);
   const [formattedTime, setFormattedTime] = useState("");
   const interval = useRef<NodeJS.Timeout | null>(null);
@@ -21,11 +20,14 @@ const useCountdown = (processState: TProcessState, processStatus: TProcessStatus
     if (processStatus.isSuccess && !processStatus.isFetching && processStatus.data) {
       setRemainingDuration(processStatus.data.interval.remainingDuration);
 
-      if (processState === "inactive") reset();
+      // TODO: Consider switch case over state
+      const state = processStatus.data.state;
 
-      if (processState === "running" && !interval.current) {
+      if (state === "inactive") reset();
+
+      if (state === "running" && !interval.current) {
         interval.current = setInterval(() => setRemainingDuration((prev) => prev - 1000), 1000);
-      } else if (processState === "paused" && interval.current) {
+      } else if (state === "paused" && interval.current) {
         clearInterval(interval.current);
         interval.current = null;
       }
@@ -33,8 +35,17 @@ const useCountdown = (processState: TProcessState, processStatus: TProcessStatus
   }, [processStatus]);
 
   useEffect(() => {
-    const startingDuration = processStatus.data?.interval.remainingDuration;
-    setFormattedTime(formatProcessDuration(processState, startingDuration ?? 0, remainingDuration));
+    if (processStatus.isSuccess && !processStatus.isFetching && processStatus.data) {
+      setFormattedTime(
+        formatProcessDuration(
+          processStatus.data.state,
+          processStatus.data.interval.remainingDuration,
+          remainingDuration,
+        ),
+      );
+    } else {
+      setFormattedTime(formatProcessDuration());
+    }
   }, [remainingDuration]);
 
   return {
