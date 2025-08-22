@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { TProcessState } from "../../process/types";
+import { TProcessStatus } from "../types";
 import { formatProcessDuration } from "../utils";
 
-const useCountdown = (processState: TProcessState, startingDuration = 0) => {
+const useCountdown = (processState: TProcessState, processStatus: TProcessStatus) => {
   const [remainingDuration, setRemainingDuration] = useState(0);
   const [formattedTime, setFormattedTime] = useState("");
   const interval = useRef<NodeJS.Timeout | null>(null);
@@ -15,26 +16,27 @@ const useCountdown = (processState: TProcessState, startingDuration = 0) => {
     }
   };
 
+  // TODO: Polish
   useEffect(() => {
-    if (!startingDuration) return;
-    setRemainingDuration(startingDuration);
+    if (processStatus.isSuccess && !processStatus.isFetching && processStatus.data) {
+      setRemainingDuration(processStatus.data.interval.remainingDuration);
 
-    if (processState === "inactive") reset();
+      if (processState === "inactive") reset();
 
-    if (processState === "running" && !interval.current) {
-      interval.current = setInterval(() => setRemainingDuration((prev) => prev - 1000), 1000);
-    } else if (processState === "paused" && interval.current) {
-      clearInterval(interval.current);
-      interval.current = null;
+      if (processState === "running" && !interval.current) {
+        interval.current = setInterval(() => setRemainingDuration((prev) => prev - 1000), 1000);
+      } else if (processState === "paused" && interval.current) {
+        clearInterval(interval.current);
+        interval.current = null;
+      }
     }
-  }, [processState, startingDuration]);
+  }, [processStatus]);
 
   useEffect(() => {
-    setFormattedTime(formatProcessDuration(processState, startingDuration, remainingDuration));
+    const startingDuration = processStatus.data?.interval.remainingDuration;
+    setFormattedTime(formatProcessDuration(processState, startingDuration ?? 0, remainingDuration));
   }, [remainingDuration]);
 
-  // TODO: Determine whether using a state for formattedTime is appropriate
-  // or would a useRef be more effective?
   return {
     formattedTime,
   };

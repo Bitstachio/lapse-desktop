@@ -1,13 +1,14 @@
-import useCountdown from "../../hooks/useCountdown";
 import { TProcessState } from "../../../process/types";
+import useCountdown from "../../hooks/useCountdown";
+import { TProcessStatus } from "../../types";
 
 interface ICountdownProps {
   processState: TProcessState;
-  startingDuration?: number;
+  processStatus: TProcessStatus;
 }
 
-const Countdown = ({ processState, startingDuration }: ICountdownProps) => {
-  const { formattedTime } = useCountdown(processState, startingDuration);
+const Countdown = ({ processState, processStatus }: ICountdownProps) => {
+  const { formattedTime } = useCountdown(processState, processStatus);
 
   return (
     <p aria-live="polite" role="status">
