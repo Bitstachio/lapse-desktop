@@ -3,4 +3,4 @@ import { IProcess } from "../process/types";
 
 export type TTimeoutType = "PROCESS_TIMEOUT" | "EXTENSION_TIMEOUT";
 
-export type TProcessStatus = Pick<UseQueryResult<IProcess, Error>, "data" | "isSuccess" | "isFetching">;
+export type TProcessStatus = Pick<UseQueryResult<IProcess | null, Error>, "data" | "isSuccess" | "isFetching">;

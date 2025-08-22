@@ -9,10 +9,17 @@ const SessionPage = () => {
   return (
     <main>
       <Countdown processStatus={status} />
-      {status.data && status.data.state === "timeout" ? (
+      {status.data?.state === "timeout" ? (
         <TimeoutModal onExtend={extend} onFinish={finish} />
+      ) : status.isSuccess && !status.isFetching ? (
+        <CountdownController
+          state={status.data?.state ?? "inactive"}
+          onStart={start}
+          onPause={pause}
+          onResume={resume}
+        />
       ) : (
-        <CountdownController state={status.data?.state ?? "inactive"} onStart={start} onPause={pause} onResume={resume} />
+        <p>Waiting for process status...</p>
       )}
     </main>
   );

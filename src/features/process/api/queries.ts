@@ -4,7 +4,7 @@ import { CLIENT_ID } from "../../../constants.ts";
 import { IProcess } from "../types.ts";
 
 export const useProcessStatus = () =>
-  useQuery<IProcess>({
+  useQuery<IProcess | null>({
     queryKey: ["process"],
     queryFn: async () => {
       const response = await api.get(`/process/status/${CLIENT_ID}`);

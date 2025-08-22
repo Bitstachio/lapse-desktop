@@ -1,5 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import socket from "../../../app/api/socket";
 import {
   useExtendProcessMutation,
   useFinishProcessMutation,
@@ -8,12 +9,8 @@ import {
   useStartProcessMutation,
 } from "../api/mutations";
 import { useProcessStatus } from "../api/queries";
-import socket from "../../../app/api/socket";
-import { TProcessState } from "../types";
 
 const useProcessManager = (component: string, quantity: number) => {
-  const [state, setState] = useState<TProcessState>("inactive");
-
   const queryClient = useQueryClient();
 
   const status = useProcessStatus();
@@ -24,47 +21,20 @@ const useProcessManager = (component: string, quantity: number) => {
   const finishMutation = useFinishProcessMutation(queryClient);
 
   useEffect(() => {
-    socket.on("process-timeout", (data) => {
-      if (data.type === "PROCESS_TIMEOUT") {
-        setState("timeout");
-      } else {
-        // data.type === "EXTENSION_TIMEOUT"
-        setState("inactive");
-      }
-    });
+    socket.on("process-timeout", () => status.refetch());
 
     return () => {
       socket.off("process-timeout");
     };
   }, []);
 
-  const start = () => {
-    startMutation.mutate({ component, quantity });
-    setState("running");
-  };
-
-  const pause = () => {
-    pauseMutation.mutate();
-    setState("paused");
-  };
-
-  const resume = () => {
-    resumeMutation.mutate();
-    setState("running");
-  };
-
-  const extend = () => {
-    extendMutation.mutate();
-    setState("running");
-  };
-
-  const finish = () => {
-    finishMutation.mutate();
-    setState("inactive");
-  };
+  const start = () => startMutation.mutate({ component, quantity });
+  const pause = () => pauseMutation.mutate();
+  const resume = () => resumeMutation.mutate();
+  const extend = () => extendMutation.mutate();
+  const finish = () => finishMutation.mutate();
 
   return {
-    state,
     status,
     start,
     pause,
