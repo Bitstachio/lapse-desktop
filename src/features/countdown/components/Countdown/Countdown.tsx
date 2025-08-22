@@ -9,7 +9,7 @@ const Countdown = ({ processStatus }: ICountdownProps) => {
   const { formattedTime } = useCountdown(processStatus);
 
   return (
-    <p aria-live="polite" role="status">
+    <p aria-live="polite" role="status" className={`${processStatus.data?.state === "timeout" && "text-danger"}`}>
       {formattedTime}
     </p>
   );
